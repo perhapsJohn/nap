@@ -1282,7 +1282,7 @@
             console.log("playerPetsCopy", playerPets);
             // Trigger Armorer ability at the start of the battle
             playerPetsCopy.forEach(pet => {
-                if (pet.ability.name === 'Armorer') {
+                if (pet.ability.name.includes('Armorer')) {
                     pet.ability.func(pet, playerPetsCopy, enemyPetsCopy, battleLog);
                 }
             });
@@ -1301,11 +1301,14 @@
                     damage = safeCalculation('-', damage, absorbedDamage);
                 }
                 enemyPet.health = Math.max(0, safeCalculation('-', enemyPet.health, damage));
-
+                let abilityTriggered = false;
                 // Trigger abilities after attack
-                if (['Berserker', 'Coin Generator', 'Vampire', 'Poison'].includes(playerPet.ability.name)) {
+                if (['Berserker', 'Coin Generator', 'Vampire', 'Poison'].some(ability => playerPet.ability.name.includes(ability)) &&
+                !playerPet.ability.name.includes('Armorer')) {
+                    abilityTriggered = true;
                     playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
                 }
+
                 console.log("playerPet 1", playerPet.health);
 
                 // Enemy pet attacks if still alive
@@ -1329,10 +1332,21 @@
 
                 // Check for abilities triggered when hurt
                 if (playerPet.health < playerPet.maxHealth) {
-                    if (['Healer', 'Medic', 'Counterattacker'].includes(playerPet.ability.name)) {
+                    if (
+                        ['Healer', 'Medic', 'Counterattacker'].some(ability => playerPet.ability.name.includes(ability)) &&
+                        !playerPet.ability.name.includes('Armorer')
+                    ) {
+                        abilityTriggered = true;
                         playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
                     }
                 }
+
+                // TODO remove later, factor elsewhere
+                if (!abilityTriggered) {
+                    playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
+                }
+
+
 
                 console.log("playerPet 4", playerPet.health);
 
