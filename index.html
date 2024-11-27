@@ -1342,7 +1342,7 @@
                 }
 
                 // TODO remove later, factor elsewhere
-                if (!abilityTriggered) {
+                if (!abilityTriggered && !playerPet.ability.name.includes('Armorer')) {
                     playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
                 }
 
