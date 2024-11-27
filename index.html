@@ -1309,7 +1309,7 @@
                 console.log("playerPet 1", playerPet.health);
 
                 // Enemy pet attacks if still alive
-                if (enemyPet.health > 0) {
+                if (enemyPet.health > 0 || true) {
                     damage = enemyPet.attack;
                     if (playerPet.tempHP > 0) {
                         let absorbedDamage = Math.min(playerPet.tempHP, damage);
