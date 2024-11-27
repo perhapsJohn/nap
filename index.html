@@ -2041,7 +2041,7 @@
 
         function mergeEnemyPets(enemyPets, round, battleLog) {
             // Increase number of enemy pets based on round
-            const additionalPets = Math.min(Math.floor(round / 5), 3); // Add up to 3 extra pets
+            const additionalPets = Math.min(Math.floor(round / 2), 10); // Add up to 3 extra pets
             for (let i = 0; i < additionalPets; i++) {
                 enemyPets.push(createPet(petTypes[Math.floor(Math.random() * petTypes.length)]));
             }
