@@ -1287,10 +1287,18 @@
                 }
             });
 
+            let zombies = {};
+
             while (playerPetsCopy.length > 0 && enemyPetsCopy.length > 0) {
+                
                 const playerPet = playerPetsCopy[0];
                 const enemyPet = enemyPetsCopy[0];
 
+                // TODO:: type is not unique
+                if (!zombies[playerPet.type]) {
+                    zombies[playerPet.type] = false;
+                }
+                
                 let roundLog = `Round ${roundCounter}: ${playerPet.type} (${playerPet.attack}/${playerPet.health + playerPet.tempHP}) vs ${enemyPet.type} (${enemyPet.attack}/${enemyPet.health + enemyPet.tempHP})`;
 
                 // Player pet attacks
@@ -1330,6 +1338,10 @@
 
                 console.log("playerPet 3", playerPet.health);
 
+                let faintedPostAttack = false;
+                if (playerPet.health <= 0) {
+                    faintedPostAttack = true;
+                }
                 // Check for abilities triggered when hurt
                 if (playerPet.health < playerPet.maxHealth) {
                     if (
@@ -1346,12 +1358,24 @@
                     playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
                 }
 
+                let faintedPostAbility = false;
+                if (playerPet.health <= 0) {
+                    faintedPostAbility = true;
+                }
 
+                let zombieFaint = false;
+                if (faintedPostAttack && !faintedPostAbility) {
+                    if (zombies[playerPet.type]) {
+                        zombieFaint = true;
+                        roundLog += `\n${playerPet.type} can only zombie once!`;
+                    }
+                    zombies[playerPet.type] = true;
+                }
 
                 console.log("playerPet 4", playerPet.health);
 
                 // Check if pets have fainted
-                if (playerPet.health <= 0) {
+                if (playerPet.health <= 0 || zombieFaint) {
                     roundLog += `\n${playerPet.type} fainted!`;
                     playerPetsCopy.shift();
                 }
