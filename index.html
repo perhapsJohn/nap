@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noita Auto Pets</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { margin: 5px; padding: 5px 10px; }
+        #shop, #team, #game-info, #battle-section { margin-top: 20px; }
+        .pet { margin-bottom: 10px; }
+        .selected { background-color: lightyellow; }
+        #battle-log {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .battle-round { margin-bottom: 10px; }
+        .expand-button { cursor: pointer; }
+        .locked-slot { opacity: 0.5; }
+    </style>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #game-info {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #shop, #team, #battle-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2980b9;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .pet {
+            background-color: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .pet:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #battle-log {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .battle-round {
+            border-bottom: 1px solid #ecf0f1;
+            padding: 10px 0;
+        }
+
+        .battle-round:last-child {
+            border-bottom: none;
+        }
+
+        .selected {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .locked-slot {
+            opacity: 0.5;
+            background-color: #95a5a6;
+        }
+
+        .expand-button {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #game-over {
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #game-over h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        #game-over button {
+            font-size: 1.2em;
+            padding: 15px 30px;
+        }
+    </style>
+<style>
+    :root {
+        --base03:  #002b36;
+        --base02:  #073642;
+        --base01:  #586e75;
+        --base00:  #657b83;
+        --base0:   #839496;
+        --base1:   #93a1a1;
+        --base2:   #eee8d5;
+        --base3:   #fdf6e3;
+        --yellow:  #b58900;
+        --orange:  #cb4b16;
+        --red:     #dc322f;
+        --magenta: #d33682;
+        --violet:  #6c71c4;
+        --blue:    #268bd2;
+        --cyan:    #2aa198;
+        --green:   #859900;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: var(--base03);
+        color: var(--base0);
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: var(--blue);
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    #game-info {
+        background-color: var(--base02);
+        color: var(--base1);
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #shop, #team, #battle-section {
+        background-color: var(--base02);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+        color: var(--cyan);
+        border-bottom: 2px solid var(--blue);
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+
+    .pet {
+        background-color: var(--base01);
+        border: 1px solid var(--base00);
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .pet:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    button {
+        background-color: var(--green);
+        color: var(--base3);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-right: 5px;
+    }
+
+    button:hover {
+        background-color: var(--yellow);
+    }
+
+    button:disabled {
+        background-color: var(--base01);
+        cursor: not-allowed;
+    }
+
+    #battle-log {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid var(--base01);
+        border-radius: 5px;
+        padding: 10px;
+        background-color: var(--base02);
+    }
+
+    .battle-round {
+        border-bottom: 1px solid var(--base01);
+        padding: 10px 0;
+    }
+
+    .battle-round:last-child {
+        border-bottom: none;
+    }
+
+    .selected {
+        background-color: var(--orange);
+        color: var(--base3);
+    }
+
+    .locked-slot {
+        opacity: 0.5;
+        background-color: var(--base01);
+    }
+
+    .expand-button {
+        background-color: var(--violet);
+        color: var(--base3);
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    #game-over {
+        background-color: rgba(0,43,54,0.9); /* base03 with opacity */
+        color: var(--base3);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #game-over h2 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        color: var(--yellow);
+    }
+
+    #game-over button {
+        font-size: 1.2em;
+        padding: 15px 30px;
+        background-color: var(--blue);
+    }
+
+    #game-over button:hover {
+        background-color: var(--cyan);
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--base02);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--base01);
+        border-radius: 6px;
+        border: 3px solid var(--base02);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--base00);
+    }
+</style>
+<style>
+    :root {
+        --background: #0a0e17;
+        --surface: #1a1f2c;
+        --primary: #00ffff;
+        --secondary: #ff00ff;
+        --accent: #ffff00;
+        --text: #ffffff;
+        --text-muted: #7a8599;
+        --danger: #ff3333;
+        --success: #33ff33;
+    }
+
+    body {
+        font-family: 'Roboto', 'Arial', sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 0 0 10px var(--primary);
+    }
+
+    #game-info {
+        background-color: var(--surface);
+        color: var(--accent);
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    #shop, #team, #battle-section {
+        background-color: var(--surface);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+    }
+
+    h2 {
+        color: var(--secondary);
+        border-bottom: 2px solid var(--secondary);
+        padding-bottom: 10px;
+        margin-top: 0;
+        text-shadow: 0 0 5px var(--secondary);
+    }
+
+    .pet {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--primary);
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .pet:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+    }
+
+    button {
+        background-color: var(--primary);
+        color: var(--background);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 5px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background-color: var(--secondary);
+        box-shadow: 0 0 10px var(--secondary);
+    }
+
+    button:disabled {
+        background-color: var(--text-muted);
+        cursor: not-allowed;
+    }
+
+    #battle-log {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid var(--primary);
+        border-radius: 5px;
+        padding: 10px;
+        background-color: rgba(0, 255, 255, 0.1);
+    }
+
+    .battle-round {
+        border-bottom: 1px solid var(--text-muted);
+        padding: 10px 0;
+    }
+
+    .battle-round:last-child {
+        border-bottom: none;
+    }
+
+    .selected {
+        background-color: rgba(255, 255, 0, 0.3);
+        box-shadow: 0 0 10px var(--accent);
+    }
+
+    .locked-slot {
+        opacity: 0.5;
+        background-color: var(--text-muted);
+    }
+
+    .expand-button {
+        background-color: var(--secondary);
+        color: var(--background);
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    #game-over {
+        background-color: rgba(10, 14, 23, 0.9);
+        color: var(--text);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #game-over h2 {
+        font-size: 3em;
+        margin-bottom: 20px;
+        color: var(--danger);
+        text-shadow: 0 0 20px var(--danger);
+    }
+
+    #game-over button {
+        font-size: 1.2em;
+        padding: 15px 30px;
+        background-color: var(--success);
+        color: var(--background);
+    }
+
+    #game-over button:hover {
+        background-color: var(--accent);
+        box-shadow: 0 0 20px var(--accent);
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 6px;
+        border: 3px solid var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--secondary);
+    }
+</style>
+<style>
+    :root {
+        /* Default theme (you can choose which one) */
+        --background: #ffffff;
+        --surface: #f0f0f0;
+        --primary: #007bff;
+        --secondary: #6c757d;
+        --accent: #ffc107;
+        --text: #333333;
+        --text-muted: #6c757d;
+        --danger: #dc3545;
+        --success: #28a745;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+
+    h1 {
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 0 0 10px var(--primary);
+    }
+
+    #game-info {
+        background-color: var(--surface);
+        color: var(--accent);
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #shop, #team, #battle-section {
+        background-color: var(--surface);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 20px rgba(255, 179, 255, 0.2);
+    }
+
+    h2 {
+        color: var(--secondary);
+        border-bottom: 2px solid var(--secondary);
+        padding-bottom: 10px;
+        margin-top: 0;
+        text-shadow: 0 0 8px var(--secondary);
+        font-size: 1.8em;
+    }
+
+    .pet {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .pet:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(124, 255, 124, 0.3);
+    }
+
+    button {
+        background-color: var(--primary);
+        color: var(--background);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px var(--primary);
+    }
+
+    button:hover {
+        background-color: var(--secondary);
+        box-shadow: 0 0 15px var(--secondary);
+    }
+
+    button:disabled {
+        background-color: var(--text-muted);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    #battle-log {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 15px;
+        background-color: rgba(124, 255, 124, 0.1);
+    }
+
+    .battle-round {
+        border-bottom: 1px solid var(--text-muted);
+        padding: 10px 0;
+    }
+
+    .battle-round:last-child {
+        border-bottom: none;
+    }
+
+    .selected {
+        background-color: rgba(255, 255, 170, 0.3);
+        box-shadow: 0 0 15px var(--accent);
+    }
+
+    .locked-slot {
+        opacity: 0.5;
+        background-color: var(--text-muted);
+    }
+
+    .expand-button {
+        background-color: var(--secondary);
+        color: var(--background);
+        padding: 10px;
+        border-radius: 25px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 15px;
+        font-weight: bold;
+        box-shadow: 0 0 10px var(--secondary);
+    }
+
+    #game-over {
+        background-color: rgba(12, 31, 12, 0.9);
+        color: var(--text);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #game-over h2 {
+        font-size: 3.5em;
+        margin-bottom: 30px;
+        color: var(--danger);
+        text-shadow: 0 0 20px var(--danger), 0 0 40px var(--danger);
+    }
+
+    #game-over button {
+        font-size: 1.3em;
+        padding: 15px 30px;
+        background-color: var(--success);
+        color: var(--background);
+    }
+
+    #game-over button:hover {
+        background-color: var(--accent);
+        box-shadow: 0 0 20px var(--accent);
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 6px;
+        border: 3px solid id var(--surface);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--secondary);
+    }
+
+    body.cyberpunk {
+        --background: #0a0e17;
+        --surface: #1a1f2c;
+        --primary: #00ffff;
+        --secondary: #ff00ff;
+        --accent: #ffff00;
+        --text: #ffffff;
+        --text-muted: #7a8599;
+        --danger: #ff3333;
+        --success: #33ff33;
+    }
+
+    /* Enchanted Forest theme */
+    body.enchanted-forest {
+        --background: #0c1f0c;
+        --surface: #1a3a1a;
+        --primary: #7cff7c;
+        --secondary: #ffb3ff;
+        --accent: #ffffaa;
+        --text: #e0ffe0;
+        --text-muted: #80c080;
+        --danger: #ff7070;
+        --success: #70ff70;
+    }
+
+    /* Space Age theme */
+    body.space-age {
+        --background: #000814;
+        --surface: #001440;
+        --primary: #00ffff;
+        --secondary: #ff00ff;
+        --accent: #ffff00;
+        --text: #ffffff;
+        --text-muted: #4a6b8a;
+        --danger: #ff3333;
+        --success: #33ff33;
+    }
+
+    * Sunset theme */
+    body.sunset {
+        --background: #ffecd1;
+        --surface: #ffd3b6;
+        --primary: #ff9a76;
+        --secondary: #ff7b54;
+        --accent: #ffac41;
+        --text: #4a4e4d;
+        --text-muted: #797a7e;
+        --danger: #c23b22;
+        --success: #5fad41;
+    }
+
+    /* Ocean theme */
+    body.ocean {
+        --background: #e3f2fd;
+        --surface: #bbdefb;
+        --primary: #1e88e5;
+        --secondary: #0277bd;
+        --accent: #4fc3f7;
+        --text: #0d47a1;
+        --text-muted: #546e7a;
+        --danger: #d32f2f;
+        --success: #43a047;
+    }
+
+    /* Monochrome theme */
+    body.monochrome {
+        --background: #f5f5f5;
+        --surface: #e0e0e0;
+        --primary: #616161;
+        --secondary: #9e9e9e;
+        --accent: #212121;
+        --text: #212121;
+        --text-muted: #757575;
+        --danger: #d32f2f;
+        --success: #388e3c;
+    }
+
+    /* Dark Mode theme */
+    body.dark-mode {
+        --background: #121212;
+        --surface: #1e1e1e;
+        --primary: #bb86fc;
+        --secondary: #03dac6;
+        --accent: #cf6679;
+        --text: #ffffff;
+        --text-muted: #b0bec5;
+        --danger: #cf6679;
+        --success: #03dac6;
+    }
+
+    * Deep Sea theme */
+    body.deep-sea {
+        --background: #05445E;
+        --surface: #033E5A;
+        --primary: #189AB4;
+        --secondary: #75E6DA;
+        --accent: #D4F1F4;
+        --text: #E0FBFC;
+        --text-muted: #A8DCD9;
+        --danger: #FF6B6B;
+        --success: #4ECF75;
+    }
+
+    /* Autumn Dusk theme */
+    body.autumn-dusk {
+        --background: #2C3E50;
+        --surface: #34495E;
+        --primary: #E67E22;
+        --secondary: #D35400;
+        --accent: #F39C12;
+        --text: #ECF0F1;
+        --text-muted: #BDC3C7;
+        --danger: #E74C3C;
+        --success: #27AE60;
+    }
+
+    /* Lavender Mist theme */
+    body.lavender-mist {
+        --background: #474787;
+        --surface: #5C5C8A;
+        --primary: #82589F;
+        --secondary: #9980FA;
+        --accent: #D6A2E8;
+        --text: #F7F1E3;
+        --text-muted: #DFD3C3;
+        --danger: #EB2F06;
+        --success: #009432;
+    }
+
+    /* Emerald Night theme */
+    body.emerald-night {
+        --background: #1E3B2F;
+        --surface: #2E5641;
+        --primary: #4CA46E;
+        --secondary: #7EB893;
+        --accent: #A9D8B8;
+        --text: #E0F2E9;
+        --text-muted: #B6CFB6;
+        --danger: #FF6B6B;
+        --success: #6BCB77;
+    }
+
+    /* Coffee House theme */
+    body.coffee-house {
+        --background: #3C2A21;
+        --surface: #4E3728;
+        --primary: #D5CEA3;
+        --secondary: #E5E5CB;
+        --accent: #F0EBCE;
+        --text: #FEFAE0;
+        --text-muted: #D3D3D3;
+        --danger: #C94C4C;
+        --success: #7CB342;
+    }
+
+    /* Midnight Blue theme */
+    body.midnight-blue {
+        --background: #1A237E;
+        --surface: #283593;
+        --primary: #3F51B5;
+        --secondary: #5C6BC0;
+        --accent: #7986CB;
+        --text: #E8EAF6;
+        --text-muted: #C5CAE9;
+        --danger: #F44336;
+        --success: #4CAF50;
+    }
+
+        /* Slate Gray theme */
+        body.slate-gray {
+        --background: #F1F3F5;
+        --surface: #E9ECEF;
+        --primary: #495057;
+        --secondary: #6C757D;
+        --accent: #228BE6;
+        --text: #212529;
+        --text-muted: #868E96;
+        --danger: #FA5252;
+        --success: #40C057;
+    }
+
+    /* Olive Green theme */
+    body.olive-green {
+        --background: #F4F5F0;
+        --surface: #E8EAE3;
+        --primary: #5C7345;
+        --secondary: #7D8E69;
+        --accent: #A6B07E;
+        --text: #2C3A1E;
+        --text-muted: #8A9A7B;
+        --danger: #C14953;
+        --success: #55A630;
+    }
+
+    /* Warm Sand theme */
+    body.warm-sand {
+        --background: #F9F5F0;
+        --surface: #F2EDE6;
+        --primary: #B08968;
+        --secondary: #C4A68A;
+        --accent: #D9C0A3;
+        --text: #4E3620;
+        --text-muted: #A18E7A;
+        --danger: #D35D50;
+        --success: #6A994E;
+    }
+
+    /* Cool Gray theme */
+    body.cool-gray {
+        --background: #F8F9FA;
+        --surface: #E9ECEF;
+        --primary: #495057;
+        --secondary: #6C757D;
+        --accent: #339AF0;
+        --text: #212529;
+        --text-muted: #ADB5BD;
+        --danger: #FA5252;
+        --success: #51CF66;
+    }
+
+    /* Soft Pastel theme */
+    body.soft-pastel {
+        --background: #FFF5F5;
+        --surface: #FFF0F0;
+        --primary: #F783AC;
+        --secondary: #D6336C;
+        --accent: #FCC419;
+        --text: #4A1C1C;
+        --text-muted: #C0A0A0;
+        --danger: #FF6B6B;
+        --success: #69DB7C;
+    }
+
+    /* Navy Blue theme */
+    body.navy-blue {
+        --background: #F8F9FA;
+        --surface: #E9ECEF;
+        --primary: #1C3879;
+        --secondary: #607EAA;
+        --accent: #EAE3D2;
+        --text: #1C3879;
+        --text-muted: #607EAA;
+        --danger: #FF6B6B;
+        --success: #4ECB71;
+    }
+
+    /* Solarized Dark theme */
+    body.solarized-dark {
+        --background: #002b36; /* base03 */
+        --surface: #073642; /* base02 */
+        --primary: #268bd2; /* blue */
+        --secondary: #2aa198; /* cyan */
+        --accent: #b58900; /* yellow */
+        --text: #93a1a1; /* base1 */
+        --text-muted: #586e75; /* base01 */
+        --danger: #dc322f; /* red */
+        --success: #859900; /* green */
+    }
+
+    /* Style switcher styles */
+    #style-switcher {
+        position: fixed;
+        top: 10px;
+        right: -200px; /* Hide it off-screen initially */
+        background-color: var(--surface);
+        padding: 10px;
+        border-radius: 5px 0 0 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s ease;
+        z-index: 1000;
+    }
+
+    #style-switcher.visible {
+        right: 0; /* Bring it on-screen when visible */
+    }
+
+    #style-switcher button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+        padding: 5px 10px;
+        background-color: var(--primary);
+        color: var(--text);
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    #style-switcher button:hover {
+        background-color: var(--secondary);
+    }
+
+    #toggle-switcher {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: var(--primary);
+        color: var(--text);
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    #toggle-switcher:hover {
+        background-color: var(--secondary);
+    }
+
+</style>
+
+
+
+</head>
+<body>
+    <div class="game-container">
+        <h1>Noita Auto Pets</h1>
+        <div id="game-info"></div>
+        <div id="game-over" style="display: none;">
+            <h2>Game Over!</h2>
+            <p>You reached round <span id="final-round"></span></p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+        <div id="shop">
+            <h2>Shop</h2>
+            <div id="shop-pets"></div>
+        </div>
+        <div id="team">
+            <h2>Your Team</h2>
+            <div id="player-pets"></div>
+        </div>
+        <button id="fight-button">Fight</button>
+        <button id="refresh-shop-button">Refresh Shop (2 coins)</button>
+        <button id="merge-button" style="display: none;">Merge Selected Pets</button>
+
+        <div id="battle-section" style="display: none;">
+            <h2>Battle</h2>
+            <div id="battle-current"></div>
+            <div class="expand-button" onclick="toggleBattleLog()">▼ Show Battle History</div>
+            <div id="battle-log" style="display: none;"></div>
+        </div>
+        <button id="toggle-switcher">Toggle Themes</button>
+
+        <div id="style-switcher">
+            <button onclick="setStyle('cyberpunk')">Cyberpunk</button>
+            <button onclick="setStyle('enchanted-forest')">Enchanted Forest</button>
+            <button onclick="setStyle('space-age')">Space Age</button>
+            <button onclick="setStyle('sunset')">Sunset</button>
+            <button onclick="setStyle('ocean')">Ocean</button>
+            <button onclick="setStyle('monochrome')">Monochrome</button>
+            <button onclick="setStyle('dark-mode')">Dark Mode</button>
+            <button onclick="setStyle('deep-sea')">Deep Sea</button>
+            <button onclick="setStyle('autumn-dusk')">Autumn Dusk</button>
+            <button onclick="setStyle('lavender-mist')">Lavender Mist</button>
+            <button onclick="setStyle('emerald-night')">Emerald Night</button>
+            <button onclick="setStyle('coffee-house')">Coffee House</button>
+            <button onclick="setStyle('midnight-blue')">Midnight Blue</button>
+            <button onclick="setStyle('slate-gray')">Slate Gray</button>
+            <button onclick="setStyle('olive-green')">Olive Green</button>
+            <button onclick="setStyle('warm-sand')">Warm Sand</button>
+            <button onclick="setStyle('cool-gray')">Cool Gray</button>
+            <button onclick="setStyle('soft-pastel')">Soft Pastel</button>
+            <button onclick="setStyle('navy-blue')">Navy Blue</button>
+            <button onclick="setStyle('solarized-dark')">Solarized Dark</button>
+        </div>
+    </div>
+
+    <script>
+        let playerPets = [];
+        let coins = 10;
+        let round = 1;
+        let gameActive = true;
+        let shopPets = [];
+        let selectedPets = [];
+        let battleHistory = [];
+        let unlockedSlots = 3;
+
+        const petTypes = [
+            'Dog', 'Cat', 'Fish', 'Bird', 'Rabbit', 'Hamster', 'Turtle', 'Lizard', 'Ferret', 'Parrot',
+            'Hedgehog', 'Penguin', 'Axolotl', 'Capybara', 'Otter', 'Sloth', 'Meerkat', 'Panda', 'Koala', 'Raccoon',
+
+            'Guinea Pig', 'Gerbil', 'Chinchilla', 'Rat', 'Mouse', 'Bearded Dragon', 'Gecko', 'Iguana', 'Chameleon', 'Snake',
+            'Frog', 'Toad', 'Newt', 'Salamander', 'Tarantula', 'Scorpion', 'Hermit Crab', 'Crab', 'Goldfish', 'Betta Fish',
+            'Guppy', 'Neon Tetra', 'Angelfish', 'Molly', 'Swordtail', 'Parakeet', 'Cockatiel', 'Lovebird', 'Finch', 'Canary',
+            'Budgie', 'Cockatoo', 'African Grey', 'Macaw', 'Toucan', 'Chicken', 'Duck', 'Goose', 'Quail', 'Pigeon'
+        ];
+
+        const abilities = [
+            { name: 'Healer', description: 'Heals a random friend for 1 HP when hurt', func: healerAbility },
+            { name: 'Berserker', description: 'Gains 1 attack after each attack', func: berserkerAbility },
+            { name: 'Medic', description: 'Heals all friends for 1 HP when hurt', func: medicAbility },
+            { name: 'Counterattacker', description: 'Attacks a random enemy for 1 damage when hurt', func: counterattackerAbility },
+            { name: 'Coin Generator', description: 'Generates 1 coin for each attack', func: coinGeneratorAbility },
+            { name: 'Vampire', description: 'Heals itself for 1 HP after each attack', func: vampireAbility },
+            { name: 'Armorer', description: 'Gives 1 temporary HP to a random friend at the start of battle', func: armorerAbility },
+            { name: 'Poison', description: 'Applies 1 poison damage to the enemy after each attack', func: poisonAbility },
+            { name: 'Buffer', description: 'Increases a random friend\'s attack by 1 after each round', func: buffAttackAbility },
+            { name: 'Sniper', description: 'Deals 2 damage to the last enemy in line', func: sniperAbility },
+            { name: 'Shield Breaker', description: 'Removes all temporary HP from the first enemy', func: shieldBreakerAbility },
+            { name: 'Sacrificer', description: 'Loses 2 HP to give all friends +1 attack and +1 HP', func: sacrificeAbility },
+            { name: 'Leech', description: 'Steals up to 2 HP from the first enemy', func: leechAbility },
+            { name: 'Kamikaze', description: 'Deals double damage but faints afterwards', func: kamikaze },
+            { name: 'Evolver', description: 'Gains +1 attack and +1 max HP after each battle', func: evolveAbility },
+            { name: 'Cloner', description: 'Creates a copy of itself with half HP', func: cloneAbility },
+            { name: 'Taunter', description: 'Reduces the attack of the first enemy by 1', func: taunterAbility },
+            { name: 'Double Strike', description: 'Attacks twice each turn', func: doubleStrikeAbility },
+            { name: 'Alchemist', description: 'Generates 1-3 coins randomly each turn', func: alchemistAbility },
+            { name: 'Mirror', description: 'Copies the ability of the first enemy', func: mirrorAbility },
+            { name: 'Zombie', description: 'Revives with 1 HP upon death', func: zombieAbility },
+            { name: 'Randomizer', description: 'Randomly changes its stats by -1, 0, or +1 each turn', func: randomizeAbility },
+            { name: 'Friendship', description: 'Buffs all friends by +1/+1 at the start of battle', func: friendshipAbility },
+            { name: 'Saboteur', description: 'Reduces a random enemy\'s stats by 1/1 each turn', func: saboteurAbility }
+        ];
+
+        function safeCalculation(operation, a, b) {
+            if (isNaN(a) || isNaN(b)) {
+                console.error(`NaN detected: ${a} ${operation} ${b}`);
+                return 0;
+            }
+            switch (operation) {
+                case '+': return a + b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return b !== 0 ? a / b : 0;
+                default: return 0;
+            }
+        }
+
+        function createPet(type) {
+            const attack = Math.max(1, Math.floor(Math.random() * 5) + 1);
+            const health = Math.max(1, Math.floor(Math.random() * 5) + 2);
+            const ability = abilities[Math.floor(Math.random() * abilities.length)];
+            const basePrice = safeCalculation('+', attack, health);
+
+            let price;
+            if (basePrice <= 4) price = 1;
+            else if (basePrice <= 6) price = 2;
+            else if (basePrice <= 8) price = 3;
+            else if (basePrice <= 10) price = 4;
+            else price = 5;
+
+            return { type, attack, health, ability, price, maxHealth: health, poison: 0, tempHP: 0 };
+        }
+
+        function refreshShop() {
+            shopPets = [];
+            for (let i = 0; i < 4; i++) {
+                const type = petTypes[Math.floor(Math.random() * petTypes.length)];
+                shopPets.push(createPet(type));
+            }
+            updateShopDisplay();
+        }
+
+        function buyPet(index) {
+            if (!gameActive) return;
+            const selectedPet = shopPets[index];
+            if (coins >= selectedPet.price && playerPets.length < unlockedSlots) {
+                playerPets.push(selectedPet);
+                coins -= selectedPet.price;
+                refreshShop();
+                updateDisplay();
+            }
+        }
+
+        function sellPet(index) {
+            if (!gameActive) return;
+            const soldPet = playerPets.splice(index, 1)[0];
+            const sellPrice = Math.max(1, Math.floor(soldPet.price / 2));
+            coins += sellPrice;
+            selectedPets = [];
+            updateDisplay();
+        }
+
+        function selectPetForMerge(index) {
+            const petDiv = document.getElementById(`pet-${index}`);
+            if (selectedPets.includes(index)) {
+                selectedPets = selectedPets.filter(i => i !== index);
+                petDiv.classList.remove('selected');
+            } else if (selectedPets.length < 2) {
+                selectedPets.push(index);
+                petDiv.classList.add('selected');
+            }
+
+            document.getElementById('merge-button').style.display = selectedPets.length === 2 ? 'inline-block' : 'none';
+        }
+
+        function mergePets() {
+            if (selectedPets.length !== 2) return;
+            const [index1, index2] = selectedPets;
+            const pet1 = playerPets[index1];
+            const pet2 = playerPets[index2];
+
+            const mergedPet = {
+                type: combinePetNames(pet1.type, pet2.type),
+                attack: safeCalculation('+', pet1.attack, pet2.attack),
+                health: safeCalculation('+', pet1.health, pet2.health),
+                maxHealth: safeCalculation('+', pet1.health, pet2.health),
+                ability: mergeAbilities(pet1.ability, pet2.ability),
+                price: safeCalculation('+', pet1.price, pet2.price),
+                poison: 0, tempHP: 0
+            };
+
+            playerPets.splice(Math.max(index1, index2), 1);
+            playerPets.splice(Math.min(index1, index2), 1, mergedPet);
+            selectedPets = [];
+            updateDisplay();
+        }
+
+        function combinePetNames(name1, name2) {
+            const firstHalf = name1.slice(0, Math.ceil(name1.length / 2));
+            const secondHalf = name2.slice(Math.floor(name2.length / 2));
+            return firstHalf + secondHalf;
+        }
+
+        function deepCopy(obj) {
+            if (obj === null || typeof obj !== 'object') {
+                return obj;
+            }
+
+            let copy = Array.isArray(obj) ? [] : {};
+
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (key === 'ability' && typeof obj[key] === 'object') {
+                        // Preserve the ability object with its function
+                        copy[key] = { ...obj[key] };
+                    } else {
+                        copy[key] = deepCopy(obj[key]);
+                    }
+                }
+            }
+
+            return copy;
+        }
+
+        function fight() {
+            if (!gameActive) return;
+            let enemyPets = [createPet(petTypes[Math.floor(Math.random() * petTypes.length)]),
+                            createPet(petTypes[Math.floor(Math.random() * petTypes.length)]),
+                            createPet(petTypes[Math.floor(Math.random() * petTypes.length)])];
+
+            let battleLog = [];
+
+            // Attempt to merge enemy pets based on the current round
+            enemyPets = mergeEnemyPets(enemyPets, round, battleLog);
+
+            let roundCounter = 1;
+            console.log("playerPets", playerPets);
+            let playerPetsCopy = deepCopy(playerPets);
+            let enemyPetsCopy = deepCopy(enemyPets);
+            console.log("playerPetsCopy", playerPets);
+            // Trigger Armorer ability at the start of the battle
+            playerPetsCopy.forEach(pet => {
+                if (pet.ability.name === 'Armorer') {
+                    pet.ability.func(pet, playerPetsCopy, enemyPetsCopy, battleLog);
+                }
+            });
+
+            while (playerPetsCopy.length > 0 && enemyPetsCopy.length > 0) {
+                const playerPet = playerPetsCopy[0];
+                const enemyPet = enemyPetsCopy[0];
+
+                let roundLog = `Round ${roundCounter}: ${playerPet.type} (${playerPet.attack}/${playerPet.health + playerPet.tempHP}) vs ${enemyPet.type} (${enemyPet.attack}/${enemyPet.health + enemyPet.tempHP})`;
+
+                // Player pet attacks
+                let damage = playerPet.attack;
+                if (enemyPet.tempHP > 0) {
+                    let absorbedDamage = Math.min(enemyPet.tempHP, damage);
+                    enemyPet.tempHP = safeCalculation('-', enemyPet.tempHP, absorbedDamage);
+                    damage = safeCalculation('-', damage, absorbedDamage);
+                }
+                enemyPet.health = Math.max(0, safeCalculation('-', enemyPet.health, damage));
+
+                // Trigger abilities after attack
+                if (['Berserker', 'Coin Generator', 'Vampire', 'Poison'].includes(playerPet.ability.name)) {
+                    playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
+                }
+                console.log("playerPet 1", playerPet.health);
+
+                // Enemy pet attacks if still alive
+                if (enemyPet.health > 0) {
+                    damage = enemyPet.attack;
+                    if (playerPet.tempHP > 0) {
+                        let absorbedDamage = Math.min(playerPet.tempHP, damage);
+                        playerPet.tempHP = safeCalculation('-', playerPet.tempHP, absorbedDamage);
+                        damage = safeCalculation('-', damage, absorbedDamage);
+                    }
+                    playerPet.health = Math.max(0, safeCalculation('-', playerPet.health, damage));
+                }
+
+                console.log("playerPet 2", playerPet.health);
+
+                // Apply poison damage
+                playerPet.health = Math.max(0, safeCalculation('-', playerPet.health, playerPet.poison || 0));
+                enemyPet.health = Math.max(0, safeCalculation('-', enemyPet.health, enemyPet.poison || 0));
+
+                console.log("playerPet 3", playerPet.health);
+
+                // Check for abilities triggered when hurt
+                if (playerPet.health < playerPet.maxHealth) {
+                    if (['Healer', 'Medic', 'Counterattacker'].includes(playerPet.ability.name)) {
+                        playerPet.ability.func(playerPet, playerPetsCopy, enemyPetsCopy, battleLog);
+                    }
+                }
+
+                console.log("playerPet 4", playerPet.health);
+
+                // Check if pets have fainted
+                if (playerPet.health <= 0) {
+                    roundLog += `\n${playerPet.type} fainted!`;
+                    playerPetsCopy.shift();
+                }
+                if (enemyPet.health <= 0) {
+                    roundLog += `\nEnemy ${enemyPet.type} fainted!`;
+                    enemyPetsCopy.shift();
+                }
+
+                battleLog.push(roundLog);
+                roundCounter++;
+            }
+
+            let battleResult = playerPetsCopy.length > 0 ? "You won the battle!" : "You lost the battle.";
+            battleLog.push(battleResult);
+
+            if (playerPetsCopy.length > 0) {
+                coins += 5;
+                round++;
+                refreshShop();
+            } else {
+                gameOver();
+            }
+
+            // Update playerPets with the battle results, ensuring health is valid
+            playerPets = playerPetsCopy.map(pet => ({
+                ...pet,
+                health: Math.max(1, pet.health), // Ensure surviving pets have at least 1 health
+                tempHP: 0,
+                poison: 0
+            }));
+            console.log('playerPets end', playerPets);
+
+            battleHistory.unshift(battleLog);
+            updateBattleDisplay(battleLog);
+            updateDisplay();
+        }
+
+        function gameOver() {
+            gameActive = false;
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('fight-button').disabled = true;
+            document.getElementById('refresh-shop-button').disabled = true;
+            updateDisplay();
+        }
+
+        function resetGame() {
+            playerPets = [];
+            coins = 10;
+            round = 1;
+            gameActive = true;
+            shopPets = [];
+            selectedPets = [];
+            battleHistory = [];
+            unlockedSlots = 3;
+
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('fight-button').disabled = false;
+            document.getElementById('refresh-shop-button').disabled = false;
+
+            refreshShop();
+            updateDisplay();
+        }
+
+        function updateBattleDisplay(battleLog) {
+            const battleSection = document.getElementById('battle-section');
+            const battleCurrent = document.getElementById('battle-current');
+            const battleLogDiv = document.getElementById('battle-log');
+
+            battleSection.style.display = 'block';
+            battleCurrent.innerHTML = battleLog.join('<br>');
+
+            battleLogDiv.innerHTML = '';
+            battleHistory.forEach((battle, index) => {
+                const battleDiv = document.createElement('div');
+                battleDiv.className = 'battle-round';
+                battleDiv.innerHTML = `<strong>Battle ${battleHistory.length - index}</strong><br>${battle.join('<br>')}`;
+                battleLogDiv.appendChild(battleDiv);
+            });
+        }
+
+        function toggleBattleLog() {
+            const battleLog = document.getElementById('battle-log');
+            const expandButton = document.querySelector('.expand-button');
+            if (battleLog.style.display === 'none') {
+                battleLog.style.display = 'block';
+                expandButton.textContent = '▲ Hide Battle History';
+            } else {
+                battleLog.style.display = 'none';
+                expandButton.textContent = '▼ Show Battle History';
+            }
+        }
+
+        function updateShopDisplay() {
+            const shopDiv = document.getElementById('shop-pets');
+            shopDiv.innerHTML = '';
+            shopPets.forEach((pet, index) => {
+                const petDiv = document.createElement('div');
+                petDiv.className = 'pet';
+                petDiv.innerHTML = `${pet.type} (${pet.attack}/${pet.health}) - ${pet.price} coins<br>
+                                    Ability: ${pet.ability.name}<br>
+                                    Description: ${pet.ability.description}<br>
+                                    <button onclick="buyPet(${index})">Buy</button>`;
+                shopDiv.appendChild(petDiv);
+            });
+        }
+
+        function updateTeamDisplay() {
+            const teamDiv = document.getElementById('player-pets');
+            teamDiv.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const petDiv = document.createElement('div');
+                petDiv.className = 'pet';
+                if (i < unlockedSlots) {
+                    if (i < playerPets.length) {
+                        const pet = playerPets[i];
+                        petDiv.id = `pet-${i}`;
+                        petDiv.innerHTML = `${pet.type} (${pet.attack}/${pet.health})<br>
+                                            Ability: ${pet.ability.name}<br>
+                                            Description: ${pet.ability.description}<br>
+                                            <button onclick="sellPet(${i})">Sell</button>
+                                            <button onclick="selectPetForMerge(${i})">Select for Merge</button>`;
+                    } else {
+                        petDiv.textContent = 'Empty Slot';
+                    }
+                } else {
+                    petDiv.classList.add('locked-slot');
+                    petDiv.innerHTML = `Locked Slot <button onclick="unlockSlot(${i})">Unlock (${10 * (i - 2)} coins)</button>`;
+                }
+                teamDiv.appendChild(petDiv);
+            }
+        }
+
+        function mergeAbilities(ability1, ability2) {
+            const mergedAbilities = {
+                'Healer+Medic': {
+                    name: 'Mass Healer',
+                    description: 'Heals all friends for 2 HP when hurt',
+                    func: (pet, team, enemies, battleLog) => {
+                        team.forEach(teamPet => {
+                            teamPet.health = Math.min(teamPet.maxHealth, safeCalculation('+', teamPet.health, 2));
+                        });
+                        battleLog.push(`${pet.type} healed all friends for 2 HP`);
+                    }
+                },
+                'Berserker+Vampire': {
+                    name: 'Bloodthirsty',
+                    description: 'Gains 1 attack and heals 1 HP after each attack',
+                    func: (pet, team, enemies, battleLog) => {
+                        pet.attack = safeCalculation('+', pet.attack, 1);
+                        pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, 1));
+                        battleLog.push(`${pet.type} gained 1 attack and healed 1 HP`);
+                    }
+                },
+                'Counterattacker+Poison': {
+                    name: 'Venomous Counter',
+                    description: 'Attacks a random enemy for 1 damage and applies 1 poison when hurt',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = Math.floor(Math.random() * enemies.length);
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 1));
+                            enemies[targetIndex].poison = safeCalculation('+', enemies[targetIndex].poison, 1);
+                            battleLog.push(`${pet.type} counterattacked ${enemies[targetIndex].type} for 1 damage and applied 1 poison`);
+                        }
+                    }
+                },
+                'Coin Generator+Alchemist': {
+                    name: 'Economic Engine',
+                    description: 'Generates 2-4 coins each turn',
+                    func: (pet, team, enemies, battleLog) => {
+                        const coinsGained = Math.floor(Math.random() * 3) + 2;
+                        coins += coinsGained;
+                        battleLog.push(`${pet.type} generated ${coinsGained} coins`);
+                    }
+                },
+                'Sniper+Double Strike': {
+                    name: 'Precision Striker',
+                    description: 'Deals 3 damage to the last enemy twice',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = enemies.length - 1;
+                            for (let i = 0; i < 2; i++) {
+                                enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 3));
+                                battleLog.push(`${pet.type} sniped ${enemies[targetIndex].type} for 3 damage`);
+                                if (enemies[targetIndex].health <= 0) {
+                                    battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                    enemies.splice(targetIndex, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                },
+                'Armorer+Buffer': {
+                    name: 'War Chief',
+                    description: 'Gives 2 temporary HP and 1 attack to a random friend at the start of battle',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (team.length > 1) {
+                            const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                            team[targetIndex].tempHP = safeCalculation('+', team[targetIndex].tempHP, 2);
+                            team[targetIndex].attack = safeCalculation('+', team[targetIndex].attack, 1);
+                            battleLog.push(`${pet.type} buffed ${team[targetIndex].type} with 2 temp HP and 1 attack`);
+                        }
+                    }
+                },
+                'Leech+Evolver': {
+                    name: 'Adaptive Parasite',
+                    description: 'Steals up to 2 HP from the first enemy and gains 1 permanent attack',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const leechedHealth = Math.min(2, enemies[0].health);
+                            enemies[0].health = safeCalculation('-', enemies[0].health, leechedHealth);
+                            pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, leechedHealth));
+                            pet.attack = safeCalculation('+', pet.attack, 1);
+                            pet.maxHealth = safeCalculation('+', pet.maxHealth, 1);
+                            battleLog.push(`${pet.type} leeched ${leechedHealth} HP from ${enemies[0].type} and evolved`);
+                        }
+                    }
+                },
+                'Kamikaze+Zombie': {
+                    name: 'Phoenix',
+                    description: 'Deals double damage and revives with 1 HP',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const damage = safeCalculation('*', pet.attack, 2);
+                            enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                            battleLog.push(`${pet.type} performed a kamikaze attack on ${enemies[0].type} for ${damage} damage`);
+                            if (enemies[0].health <= 0) {
+                                battleLog.push(`${enemies[0].type} fainted!`);
+                                enemies.shift();
+                            }
+                            pet.health = 1;
+                            battleLog.push(`${pet.type} revived with 1 HP!`);
+                        }
+                    }
+                },
+                'Cloner+Friendship': {
+                    name: 'Hive Mind',
+                    description: 'Creates a copy of itself and buffs all friends',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (team.length < 5) {
+                            const halfHealth = safeCalculation('/', pet.health, 2);
+                            const clone = { ...pet, health: Math.floor(halfHealth) };
+                            pet.health = Math.ceil(halfHealth);
+                            team.push(clone);
+                            battleLog.push(`${pet.type} created a clone of itself`);
+                        }
+                        team.forEach((friendPet, index) => {
+                            if (index !== 0) {  // Don't buff self
+                                friendPet.attack = safeCalculation('+', friendPet.attack, 1);
+                                friendPet.health = Math.min(friendPet.maxHealth, safeCalculation('+', friendPet.health, 1));
+                            }
+                        });
+                        battleLog.push(`${pet.type}'s hive mind buffed all friends by +1/+1`);
+                    }
+                },
+                'Taunter+Shield Breaker': {
+                    name: 'Disruptor',
+                    description: 'Reduces the attack of the first enemy by 2 and removes all its temporary HP',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            enemies[0].attack = Math.max(0, safeCalculation('-', enemies[0].attack, 2));
+                            const brokenShield = enemies[0].tempHP;
+                            enemies[0].tempHP = 0;
+                            battleLog.push(`${pet.type} disrupted ${enemies[0].type}, reducing its attack by 2 and breaking ${brokenShield} shield`);
+                        }
+                    }
+                },
+                'Saboteur+Randomizer': {
+                    name: 'Chaos Agent',
+                    description: 'Randomly changes a random enemy\'s stats by -2 to +1',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = Math.floor(Math.random() * enemies.length);
+                            const attackChange = Math.floor(Math.random() * 4) - 2;  // -2 to +1
+                            const healthChange = Math.floor(Math.random() * 4) - 2;  // -2 to +1
+                            enemies[targetIndex].attack = Math.max(0, safeCalculation('+', enemies[targetIndex].attack,  attackChange));
+                            enemies[targetIndex].health = Math.max(1, safeCalculation('+', enemies[targetIndex].health, healthChange));
+                            battleLog.push(`${pet.type} caused chaos to ${enemies[targetIndex].type}, changing its stats by ${attackChange}/
+        ${healthChange}`);
+                        }
+                    }
+                },
+                'Mirror+Evolver': {
+                    name: 'Adaptive Mimic',
+                    description: 'Copies the ability of the first enemy and gains +1/+1 after each battle',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            pet.ability = {...enemies[0].ability};
+                            battleLog.push(`${pet.type} mirrored ${enemies[0].type}'s ability: ${pet.ability.name}`);
+                        }
+                        pet.attack = safeCalculation('+', pet.attack, 1);
+                        pet.maxHealth = safeCalculation('+', pet.maxHealth, 1);;
+                        pet.health = pet.maxHealth;
+                        battleLog.push(`${pet.type} evolved, gaining +1/+1`);
+                    }
+                },
+
+                'Sacrificer+Friendship': {
+                    name: 'Martyrdom',
+                    description: 'Loses 3 HP to give all friends +2/+2',
+                    func: (pet, team, enemies, battleLog) => {
+                        pet.health = Math.max(1, safeCalculation('-', pet.health, 3));
+                        team.slice(1).forEach(teamPet => {
+                            teamPet.attack = safeCalculation('+', teamPet.attack, 2);
+                            teamPet.health = Math.min(safeCalculation('+', teamPet.maxHealth, 2), safeCalculation('+', teamPet.health, 2));
+                            teamPet.maxHealth = safeCalculation('+', teamPet.maxHealth, 2);
+                        });
+                        battleLog.push(`${pet.type} sacrificed 3 HP to buff all friends by +2/+2`);
+                    }
+                },
+
+                'Poison+Leech': {
+                    name: 'Toxic Parasite',
+                    description: 'Applies 2 poison to the enemy and heals itself for the damage dealt',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            enemies[0].poison = safeCalculation('+', enemies[0].poison, 2);
+                            const damageDealt = Math.min(2, enemies[0].health);
+                            enemies[0].health = safeCalculation('-', enemies[0].health, damageDealt);
+                            pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, damageDealt));
+                            battleLog.push(`${pet.type} applied 2 poison to ${enemies[0].type} and healed for ${damageDealt} HP`);
+                        }
+                    }
+                },
+
+                'Berserker+Sniper': {
+                    name: 'Sharpshooter',
+                    description: 'Deals 3 damage to the last enemy and gains 2 attack',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = enemies.length - 1;
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health , 3));
+                            battleLog.push(`${pet.type} sniped ${enemies[targetIndex].type} for 3 damage`);
+                            if (enemies[targetIndex].health <= 0) {
+                                battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                enemies.splice(targetIndex, 1);
+                            }
+                        }
+                        pet.attack = safeCalculation('+', pet.attack, 2);
+                        battleLog.push(`${pet.type} gained 2 attack`);
+                    }
+                },
+
+                'Armorer+Zombie': {
+                    name: 'Undying Guardian',
+                    description: 'Gives 2 temporary HP to all friends at the start of battle and revives with 2 HP upon death',
+                    func: (pet, team, enemies, battleLog) => {
+                        team.forEach(teamPet => {
+                            teamPet.tempHP = safeCalculation('+', teamPet.tempHP, 2);
+                        });
+                        battleLog.push(`${pet.type} gave 2 temporary HP to all friends`);
+                        if (pet.health <= 0) {
+                            pet.health = safeCalculation('+', pet.health, 2);
+                            battleLog.push(`${pet.type} revived with 2 HP!`);
+                        }
+                    }
+                },
+
+                'Coin Generator+Kamikaze': {
+                    name: 'Golden Explosion',
+                    description: 'Generates 5 coins and deals triple damage, but faints afterwards',
+                    func: (pet, team, enemies, battleLog) => {
+                        coins += 5;
+                        battleLog.push(`${pet.type} generated 5 coins`);
+                        if (enemies.length > 0) {
+                            const damage = safeCalculation('*', pet.attack, 3);
+                            enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                            pet.health = 0;
+                            battleLog.push(`${pet.type} performed a golden kamikaze attack on ${enemies[0].type} for ${damage} damage`);
+                            if (enemies[0].health <= 0) {
+                                battleLog.push(`${enemies[0].type} fainted!`);
+                                enemies.shift();
+                            }
+                            battleLog.push(`${pet.type} fainted from its kamikaze attack!`);
+                        }
+                    }
+                },
+
+                'Taunter+Counterattacker': {
+                    name: 'Provocateur',
+                    description: 'Reduces the attack of the first enemy by 1 and counterattacks for 2 damage when hurt',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            enemies[0].attack = Math.max(0, safeCalculation('-', enemies[0].attack, 1));
+                            battleLog.push(`${pet.type} taunted ${enemies[0].type}, reducing its attack by 1`);
+                        }
+                        if (pet.health < pet.maxHealth && enemies.length > 0) {
+                            enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, 2));
+                            battleLog.push(`${pet.type} counterattacked ${enemies[0].type} for 2 damage`);
+                            if (enemies[0].health <= 0) {
+                                battleLog.push(`${enemies[0].type} fainted!`);
+                                enemies.shift();
+                            }
+                        }
+                    }
+                },
+
+                // New super-merged abilities
+                'Mass Healer+Bloodthirsty': {
+                    name: 'Vampiric Aura',
+                    description: 'Heals all friends for 2 HP and gains 2 attack after each attack',
+                    func: (pet, team, enemies, battleLog) => {
+                        team.forEach(teamPet => {
+                            teamPet.health = Math.min(teamPet.maxHealth, safeCalculation('+', teamPet.health, 2));
+                        });
+                        pet.attack = safeCalculation('+', pet.attack, 2);
+                        battleLog.push(`${pet.type} healed all friends for 2 HP and gained 2 attack`);
+                    }
+                },
+
+                'Venomous Counter+Precision Striker': {
+                    name: 'Toxic Sniper',
+                    description: 'Attacks the last enemy for 4 damage and applies 2 poison when hurt',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = enemies.length - 1;
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 4));
+                            enemies[targetIndex].poison = safeCalculation('+', enemies[targetIndex].poison, 2);
+                            battleLog.push(`${pet.type} sniped ${enemies[targetIndex].type} for 4 damage and applied 2 poison`);
+                            if (enemies[targetIndex].health <= 0) {
+                                battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                enemies.splice(targetIndex, 1);
+                            }
+                        }
+                    }
+                },
+
+                'Economic Engine+War Chief': {
+                    name: 'Prosperity General',
+                    description: 'Generates 3-5 coins and gives 3 temporary HP and 2 attack to a random friend',
+                    func: (pet, team, enemies, battleLog) => {
+                        const coinsGained = Math.floor(Math.random() * 3) + 3;
+                        coins = safeCalculation('+', coins, coinsGained);
+                        battleLog.push(`${pet.type} generated ${coinsGained} coins`);
+
+                        if (team.length > 1) {
+                            const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                            team[targetIndex].tempHP = safeCalculation('+', team[targetIndex].tempHP, 3);
+                            team[targetIndex].attack = safeCalculation('+', team[targetIndex].attack, 2);
+                            battleLog.push(`${pet.type} buffed ${team[targetIndex].type} with 3 temp HP and 2 attack`);
+                        }
+                    }
+                },
+
+                'Adaptive Parasite+Phoenix': {
+                    name: 'Evolving Phoenix',
+                    description: 'Deals triple damage, revives with 2 HP, and gains 2 permanent attack and health',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const damage = safeCalculation('*', pet.attack, 3);
+                            enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                            battleLog.push(`${pet.type} performed a phoenix attack on ${enemies[0].type} for ${damage} damage`);
+                            if (enemies[0].health <= 0) {
+                                battleLog.push(`${enemies[0].type} fainted!`);
+                                enemies.shift();
+                            }
+                            pet.health = 2;
+                            pet.attack = safeCalculation('+', pet.attack, 2);
+                            pet.maxHealth = safeCalculation('+', pet.maxHealth, 2);
+                            battleLog.push(`${pet.type} revived with 2 HP and evolved, gaining 2 attack and 2 max health`);
+                        }
+                    }
+                },
+
+                'Hive Mind+Disruptor': {
+                    name: 'Swarm Tactician',
+                    description: 'Creates two copies of itself, reduces enemy attack by 2, and removes all enemy temporary HP',
+                    func: (pet, team, enemies, battleLog) => {
+                        for (let i = 0; i < 2; i++) {
+                            if (team.length < 5) {
+                                const clone = { ...pet, health: Math.floor(pet.health / 2) };
+                                pet.health = Math.ceil(pet.health / 2);
+                                team.push(clone);
+                                battleLog.push(`${pet.type} created a clone of itself`);
+                            }
+                        }
+                        if (enemies.length > 0) {
+                            enemies[0].attack = Math.max(0, safeCalculation('-', enemies[0].attack, 2));
+                            const brokenShield = enemies[0].tempHP;
+                            enemies[0].tempHP = 0;
+                            battleLog.push(`${pet.type} disrupted ${enemies[0].type}, reducing its attack by 2 and breaking ${brokenShield} shield`);
+                        }
+                    }
+                },
+
+                // Additional super-merged abilities
+                'Chaos Agent+Adaptive Mimic': {
+                    name: 'Evolutionary Chaos',
+                    description: 'Copies the ability of a random enemy, then randomly changes all pets\' stats by -3 to +3',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+                            pet.ability = {...randomEnemy.ability};
+                            battleLog.push(`${pet.type} mimicked ${randomEnemy.type}'s ability: ${pet.ability.name}`);
+                        }
+                        [...team, ...enemies].forEach(targetPet => {
+                            const attackChange = Math.floor(Math.random() * 7) - 3; // -3 to +3
+                            const healthChange = Math.floor(Math.random() * 7) - 3; // -3 to +3
+                            targetPet.attack = Math.max(0, safeCalculation('+', targetPet.attack, attackChange));
+                            targetPet.health = Math.max(1, safeCalculation('+', targetPet.health, healthChange));
+                            battleLog.push(`${targetPet.type}'s stats changed by ${attackChange}/
+        ${healthChange}`);
+                        });
+                    }
+                },
+
+                'Martyrdom+Toxic Parasite': {
+                    name: 'Sacrificial Plague',
+                    description: 'Loses 4 HP to give all friends +3/+3 and apply 3 poison to all enemies',
+                    func: (pet, team, enemies, battleLog) => {
+                        pet.health = Math.max(1, safeCalculation('-', pet.health, 4));
+                        team.slice(1).forEach(teamPet => {
+                            teamPet.attack = safeCalculation('+', teamPet.attack, 3);
+                            teamPet.health = Math.min(safeCalculation('+', teamPet.maxHealth, 3),
+                                                    safeCalculation('+', teamPet.health, 3));
+                            teamPet.maxHealth = safeCalculation('+', teamPet.maxHealth, 3);
+                        });
+                        enemies.forEach(enemy => {
+                            enemy.poison = safeCalculation('+', enemy.poison, 3);
+                        });
+                        battleLog.push(`${pet.type} sacrificed 4 HP to buff all friends by +3/+3 and poison all enemies`);
+                    }
+                },
+
+                'Sharpshooter+Undying Guardian': {
+                    name: 'Immortal Marksman',
+                    description: 'Deals 4 damage to the last enemy, gains 3 attack, gives 3 temporary HP to all friends, and revives with 3 HP upon death',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = enemies.length - 1;
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 4));
+                            battleLog.push(`${pet.type} sniped ${enemies[targetIndex].type} for 4 damage`);
+                            if (enemies[targetIndex].health <= 0) {
+                                battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                enemies.splice(targetIndex, 1);
+                            }
+                        }
+                        pet.attack = safeCalculation('+', pet.attack, 3);
+                        team.forEach(teamPet => {
+                            teamPet.tempHP = safeCalculation('+', teamPet.tempHP, 3);
+                        });
+                        battleLog.push(`${pet.type} gained 3 attack and gave 3 temporary HP to all friends`);
+                        if (pet.health <= 0) {
+                            pet.health = 3;
+                            battleLog.push(`${pet.type} revived with 3 HP!`);
+                        }
+                    }
+                },
+
+                'Golden Explosion+Provocateur': {
+                    name: 'Gilded Martyr',
+                    description: 'Generates 7 coins, reduces all enemies\' attack by 2, deals quadruple damage to all enemies, but faints afterwards',
+                    func: (pet, team, enemies, battleLog) => {
+                        coins = safeCalculation('+', coins, 7);
+                        battleLog.push(`${pet.type} generated 7 coins`);
+                        enemies.forEach(enemy => {
+                            enemy.attack = Math.max(0, safeCalculation('-', enemy.attack, 2));
+                            const damage = safeCalculation('*', pet.attack, 4);
+                            enemy.health = Math.max(0, safeCalculation('-', enemy.health, damage));
+                            battleLog.push(`${pet.type} reduced ${enemy.type}'s attack by 2 and dealt ${damage} damage`);
+                        });
+                        pet.health = 0;
+                        battleLog.push(`${pet.type} fainted from its gilded martyr attack!`);
+                        enemies = enemies.filter(enemy => enemy.health > 0);
+                    }
+                },
+
+                'Mass Healer+Precision Striker': {
+                    name: 'Healing Sniper',
+                    description: 'Heals all friends for 3 HP and deals 5 damage to the last two enemies',
+                    func: (pet, team, enemies, battleLog) => {
+                        team.forEach(teamPet => {
+                            teamPet.health = Math.min(teamPet.maxHealth, safeCalculation('+', teamPet.health, 3));
+                        });
+                        battleLog.push(`${pet.type} healed all friends for 3 HP`);
+                        for (let i = 0; i < 2; i++) {
+                            if (enemies.length > 0) {
+                                const targetIndex = enemies.length - 1;
+                                enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 5));
+                                battleLog.push(`${pet.type} sniped ${enemies[targetIndex].type} for 5 damage`);
+                                if (enemies[targetIndex].health <= 0) {
+                                    battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                    enemies.splice(targetIndex, 1);
+                                }
+                            }
+                        }
+                    }
+                },
+
+                // Additional regular combined abilities
+                'Armorer+Coin Generator': {
+                    name: 'Golden Shield',
+                    description: 'Gives 2 temporary HP to a random friend and generates 2 coins at the start of battle',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (team.length > 1) {
+                            const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                            team[targetIndex].tempHP = safeCalculation('+', team[targetIndex].tempHP, 2);
+                            battleLog.push(`${pet.type} gave 2 temporary HP to ${team[targetIndex].type}`);
+                        }
+                        coins = safeCalculation('+', coins, 2);
+                        battleLog.push(`${pet.type} generated 2 coins`);
+                    }
+                },
+
+                'Leech+Counterattacker': {
+                    name: 'Vampiric Counter',
+                    description: 'When hurt, attacks a random enemy for 2 damage and heals itself for 2 HP',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = Math.floor(Math.random() * enemies.length);
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 2));
+                            pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, 2));
+                            battleLog.push(`${pet.type} counterattacked ${enemies[targetIndex].type} for 2 damage and healed 2 HP`);
+                            if (enemies[targetIndex].health <= 0) {
+                                battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                enemies.splice(targetIndex, 1);
+                            }
+                        }
+                    }
+                },
+
+                'Evolver+Buffer': {
+                    name: 'Growth Catalyst',
+                    description: 'Gains +1/+1 after each battle and increases a random friend\'s attack by 2',
+                    func: (pet, team, enemies, battleLog) => {
+                        pet.attack = safeCalculation('+', pet.attack, 1);
+                        pet.maxHealth = safeCalculation('+', pet.maxHealth, 1);
+                        pet.health = pet.maxHealth;
+                        battleLog.push(`${pet.type} evolved, gaining +1/+1`);
+
+                        if (team.length > 1) {
+                            const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                            team[targetIndex].attack = safeCalculation('+', team[targetIndex].attack, 2);
+                            battleLog.push(`${pet.type} increased ${team[targetIndex].type}'s attack by 2`);
+                        }
+                    }
+                },
+
+                'Saboteur+Sniper': {
+                    name: 'Precise Sabotage',
+                    description: 'Reduces the last enemy\'s attack by 2 and deals 3 damage to it',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (enemies.length > 0) {
+                            const targetIndex = enemies.length - 1;
+                            enemies[targetIndex].attack = Math.max(0, safeCalculation('-', enemies[targetIndex].attack, 2));
+                            enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 3));
+                            battleLog.push(`${pet.type} reduced ${enemies[targetIndex].type}'s attack by 2 and dealt 3 damage`);
+                            if (enemies[targetIndex].health <= 0) {
+                                battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                                enemies.splice(targetIndex, 1);
+                            }
+                        }
+                    }
+                },
+
+                'Cloner+Kamikaze': {
+                    name: 'Splitting Bomb',
+                    description: 'Creates a copy of itself, then both deal double damage and faint',
+                    func: (pet, team, enemies, battleLog) => {
+                        if (team.length < 5) {
+                            const clone = { ...pet, health: Math.floor(pet.health / 2) };
+                            pet.health = Math.ceil(pet.health / 2);
+                            team.push(clone);
+                            battleLog.push(`${pet.type} created a clone of itself`);
+                        }
+                        if (enemies.length > 0) {
+                            const damage = safeCalculation('*', pet.attack, 2);
+                            enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                            battleLog.push(`${pet.type} and its clone performed a kamikaze attack on ${enemies[0].type} for ${damage} damage each`);
+                            if (enemies[0].health <= 0) {
+                                battleLog.push(`${enemies[0].type} fainted!`);
+                                enemies.shift();
+                            }
+                            pet.health = 0;
+                            team.pop(); // Remove the clone
+                            battleLog.push(`${pet.type} and its clone fainted from their kamikaze attack!`);
+                        }
+                    }
+                }
+            };
+
+            const key1 = ability1.name + '+' + ability2.name;
+            const key2 = ability2.name + '+' + ability1.name;
+
+            if (mergedAbilities[key1]) {
+                return mergedAbilities[key1];
+            } else if (mergedAbilities[key2]) {
+                return mergedAbilities[key2];
+            } else {
+                // If no specific merged ability is defined, return a generic merged ability
+                return {
+                    name: 'Merged ' + ability1.name + ' & ' + ability2.name,
+                    description: [ability1.description, ability2.description].join('. </br>'),
+                    func: (pet, team, enemies, battleLog) => {
+                        ability1.func(pet, team, enemies, battleLog);
+                        ability2.func(pet, team, enemies, battleLog);
+                    }
+                };
+            }
+        }
+
+        function mergeEnemyPets(enemyPets, round, battleLog) {
+            // Increase number of enemy pets based on round
+            const additionalPets = Math.min(Math.floor(round / 5), 3); // Add up to 3 extra pets
+            for (let i = 0; i < additionalPets; i++) {
+                enemyPets.push(createPet(petTypes[Math.floor(Math.random() * petTypes.length)]));
+            }
+
+            if (additionalPets > 0) {
+                battleLog.push(`The enemy team grew stronger with ${additionalPets} additional pet${additionalPets > 1 ? 's' : ''}!`);
+            }
+
+            // Start merging from round 3
+            if (round >= 3) {
+                while (enemyPets.length > 3) {
+                    const index1 = Math.floor(Math.random() * enemyPets.length);
+                    let index2;
+                    do {
+                        index2 = Math.floor(Math.random() * enemyPets.length);
+                    } while (index2 === index1);
+
+                    const pet1 = enemyPets[index1];
+                    const pet2 = enemyPets[index2];
+
+                    const mergedPet = {
+                        type: combinePetNames(pet1.type, pet2.type),
+                        attack: safeCalculation('+', pet1.attack, pet2.attack),
+                        health: safeCalculation('+', pet1.health, pet2.health),
+                        maxHealth: safeCalculation('+', pet1.health, pet2.health),
+                        ability: mergeAbilities(pet1.ability, pet2.ability),
+                        price: safeCalculation('+', pet1.price, pet2.price),
+                        poison: 0, tempHP: 0
+                    };
+
+                    // Remove the two original pets and add the merged one
+                    enemyPets.splice(Math.max(index1, index2), 1);
+                    enemyPets.splice(Math.min(index1, index2), 1);
+                    enemyPets.push(mergedPet);
+
+                    // Add merge information to the battle log
+                    battleLog.push(`Enemy ${pet1.type} and ${pet2.type} merged into ${mergedPet.type}!`);
+                    battleLog.push(`${mergedPet.type} has ${mergedPet.attack} attack and ${mergedPet.health} health.`);
+                    battleLog.push(`${mergedPet.type}'s ability: ${mergedPet.ability.name} - ${mergedPet.ability.description}`);
+                }
+            }
+
+            return enemyPets;
+        }
+
+        function healerAbility(pet, team, enemies, battleLog) {
+            if (team.length > 1) {
+                const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                team[targetIndex].health = Math.min(team[targetIndex].maxHealth, safeCalculation('+', team[targetIndex].health, 1));
+                battleLog.push(`${pet.type} healed ${team[targetIndex].type} for 1 HP`);
+            }
+        }
+
+        function berserkerAbility(pet, team, enemies, battleLog) {
+            pet.attack = safeCalculation('+', pet.attack, 1);
+            battleLog.push(`${pet.type} gained 1 attack`);
+        }
+
+        function medicAbility(pet, team, enemies, battleLog) {
+            team.forEach((teamPet, index) => {
+                if (index !== 0) {
+                    teamPet.health = Math.min(teamPet.maxHealth, safeCalculation('+', teamPet.health, 1));
+                }
+            });
+            battleLog.push(`${pet.type} healed all friends for 1 HP`);
+        }
+
+        function counterattackerAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                const targetIndex = Math.floor(Math.random() * enemies.length);
+                enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 1));
+                battleLog.push(`${pet.type} counterattacked ${enemies[targetIndex].type} for 1 damage`);
+                if (enemies[targetIndex].health <= 0) {
+                    battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                    enemies.splice(targetIndex, 1);
+                }
+            }
+        }
+
+        function coinGeneratorAbility(pet, team, enemies, battleLog) {
+            coins += 1;
+            battleLog.push(`${pet.type} generated 1 coin`);
+        }
+
+        function vampireAbility(pet, team, enemies, battleLog) {
+            pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, 1));
+            battleLog.push(`${pet.type} healed itself for 1 HP`);
+        }
+
+        function armorerAbility(pet, team, enemies, battleLog) {
+            if (team.length > 1) {
+                const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                team[targetIndex].tempHP = safeCalculation('+', team[targetIndex].tempHP, 1);
+                battleLog.push(`${pet.type} gave 1 temporary HP to ${team[targetIndex].type}`);
+            }
+        }
+
+        function poisonAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                enemies[0].poison = safeCalculation('+', enemies[0].poison, 1);
+                battleLog.push(`${pet.type} applied 1 poison to ${enemies[0].type}`);
+            }
+        }
+
+        function buffAttackAbility(pet, team, enemies, battleLog) {
+            if (team.length > 1) {
+                const targetIndex = Math.floor(Math.random() * (team.length - 1)) + 1;
+                team[targetIndex].attack = safeCalculation('+', team[targetIndex].attack, 1);
+                battleLog.push(`${pet.type} increased ${team[targetIndex].type}'s attack by 1`);
+            }
+        }
+
+        function sniperAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 1) {
+                const targetIndex = enemies.length - 1;
+                enemies[targetIndex].health = Math.max(0, safeCalculation('-', enemies[targetIndex].health, 2));
+                battleLog.push(`${pet.type} sniped the last enemy ${enemies[targetIndex].type} for 2 damage`);
+                if (enemies[targetIndex].health <= 0) {
+                    battleLog.push(`${enemies[targetIndex].type} fainted!`);
+                    enemies.splice(targetIndex, 1);
+                }
+            }
+        }
+
+        function shieldBreakerAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0 && enemies[0].tempHP > 0) {
+                const brokenShield = enemies[0].tempHP;
+                enemies[0].tempHP = 0;
+                battleLog.push(`${pet.type} broke ${enemies[0].type}'s shield of ${brokenShield} HP`);
+            }
+        }
+
+        function sacrificeAbility(pet, team, enemies, battleLog) {
+            if (team.length > 1) {
+                pet.health = Math.max(1, safeCalculation('-', pet.health, 2));
+                team.slice(1).forEach(teamPet => {
+                    teamPet.attack = safeCalculation('+', teamPet.attack, 1);
+                    teamPet.health = Math.min(teamPet.maxHealth, safeCalculation('+', teamPet.health, 1));
+                });
+                battleLog.push(`${pet.type} sacrificed 2 HP to buff all friends`);
+            }
+        }
+
+        function leechAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                const leechedHealth = Math.min(2, enemies[0].health);
+                enemies[0].health = safeCalculation('-', enemies[0].health, leechedHealth);
+                pet.health = Math.min(pet.maxHealth, safeCalculation('+', pet.health, leechedHealth));
+                battleLog.push(`${pet.type} leeched ${leechedHealth} HP from ${enemies[0].type}`);
+            }
+        }
+
+        function kamikaze(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                const damage = safeCalculation('*', pet.attack, 2);
+                enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                pet.health = 0;
+                battleLog.push(`${pet.type} performed a kamikaze attack on ${enemies[0].type} for ${damage} damage`);
+                if (enemies[0].health <= 0) {
+                    battleLog.push(`${enemies[0].type} fainted!`);
+                    enemies.shift();
+                }
+                battleLog.push(`${pet.type} fainted from its kamikaze attack!`);
+            }
+        }
+
+        function evolveAbility(pet, team, enemies, battleLog) {
+            pet.attack = safeCalculation('+', pet.attack, 1);
+            pet.maxHealth += safeCalculation('+', pet.maxHealth, 1);
+            pet.health = pet.maxHealth;
+            battleLog.push(`${pet.type} evolved, gaining 1 attack and 1 max health`);
+        }
+
+        function cloneAbility(pet, team, enemies, battleLog) {
+            if (team.length < 5) {
+                const halfPetHealth = safeCalculation('/', pet.health, 2);
+                const clone = { ...pet, health: Math.floor(halfPetHealth) };
+                pet.health = Math.ceil(halfPetHealth);
+                team.push(clone);
+                battleLog.push(`${pet.type} created a clone of itself`);
+            }
+        }
+
+        function taunterAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                enemies[0].attack = safeCalculation('-', enemies[0].attack, 1);
+                battleLog.push(`${pet.type} taunted ${enemies[0].type}, reducing its attack by 1`);
+            }
+        }
+
+        function doubleStrikeAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                const damage = pet.attack;
+                enemies[0].health = Math.max(0, safeCalculation('-', enemies[0].health, damage));
+                battleLog.push(`${pet.type} performed a double strike, dealing ${damage} extra damage to ${enemies[0].type}`);
+                if (enemies[0].health <= 0) {
+                    battleLog.push(`${enemies[0].type} fainted!`);
+                    enemies.shift();
+                }
+            }
+        }
+
+        function alchemistAbility(pet, team, enemies, battleLog) {
+            const goldGained = Math.floor(Math.random() * 3) + 1;  // 1 to 3 coins
+            coins += goldGained;
+            battleLog.push(`${pet.type} transmuted materials into ${goldGained} coins`);
+        }
+
+        function mirrorAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                pet.ability = {...enemies[0].ability};
+                battleLog.push(`${pet.type} mirrored ${enemies[0].type}'s ability: ${pet.ability.name}`);
+            }
+        }
+
+        function zombieAbility(pet, team, enemies, battleLog) {
+            if (pet.health <= 0) {
+                pet.health = 1;
+                battleLog.push(`${pet.type} rose from the dead with 1 HP!`);
+            }
+        }
+
+        function randomizeAbility(pet, team, enemies, battleLog) {
+            const statChange = Math.floor(Math.random() * 3) - 1;  // -1, 0, or 1
+            pet.attack = Math.max(1, safeCalculation('+', pet.attack, statChange));
+            pet.health = Math.max(1, safeCalculation('+', pet.health, statChange));
+            battleLog.push(`${pet.type}'s stats were randomized: Attack ${statChange >= 0 ? '+' : ''}${statChange}, Health ${statChange >= 0 ? '+' : ''}${statChange}`);
+        }
+
+        function friendshipAbility(pet, team, enemies, battleLog) {
+            if (team.length > 1) {
+                team.forEach((friendPet, index) => {
+                    if (index !== 0) {  // Don't buff self
+                        friendPet.attack = safeCalculation('+', friendPet.attack, 1);
+                        friendPet.health = Math.min(friendPet.maxHealth, safeCalculation('+', friendPet.health, 1));
+                    }
+                });
+                battleLog.push(`${pet.type}'s friendship buffed all friends by +1/+1`);
+            }
+        }
+
+        function saboteurAbility(pet, team, enemies, battleLog) {
+            if (enemies.length > 0) {
+                const targetIndex = Math.floor(Math.random() * enemies.length);
+                enemies[targetIndex].attack = Math.max(0, safeCalculation('-', enemies[targetIndex].attack, 1));
+                enemies[targetIndex].health = Math.max(1, safeCalculation('-', enemies[targetIndex].health, 1));
+                battleLog.push(`${pet.type} sabotaged ${enemies[targetIndex].type}, reducing its stats by 1/1`);
+            }
+        }
+
+        function unlockSlot(index) {
+            const cost = 10 * (index - 2);
+            if (coins >= cost) {
+                coins -= cost;
+                unlockedSlots++;
+                updateDisplay();
+            } else {
+                alert("Not enough coins to unlock this slot!");
+            }
+        }
+
+        function updateGameInfo() {
+            const infoDiv = document.getElementById('game-info');
+            infoDiv.innerHTML = `Round: ${round} | Coins: ${coins}`;
+        }
+
+        function updateDisplay() {
+            try {
+                updateGameInfo();
+                updateTeamDisplay();
+                updateShopDisplay();
+                document.getElementById('merge-button').style.display = 'none';
+                document.getElementById('fight-button').disabled = playerPets.length === 0;
+
+                if (!gameActive) {
+                    document.getElementById('final-round').textContent = round;
+                }
+            } catch (error) {
+                console.error('Error in updateDisplay:', error);
+                console.log('Current game state:', { playerPets, coins, round, gameActive, shopPets });
+            }
+        }
+
+        document.getElementById('fight-button').addEventListener('click', fight);
+        document.getElementById('refresh-shop-button').addEventListener('click', () => {
+            if (coins >= 2) {
+                coins -= 2;
+                refreshShop();
+                updateDisplay();
+            } else {
+                alert("Not enough coins to refresh the shop!");
+            }
+        });
+        document.getElementById('merge-button').addEventListener('click', mergePets);
+
+        // Initialize the game
+        refreshShop();
+        updateDisplay();
+    </script>
+    <script>
+        function setStyle(style) {
+            document.body.className = style;
+            localStorage.setItem('preferred-style', style);
+        }
+
+        function toggleStyleSwitcher() {
+            const switcher = document.getElementById('style-switcher');
+            switcher.classList.toggle('visible');
+        }
+
+        // Apply the saved style on page load
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const savedStyle = localStorage.getItem('preferred-style');
+            if (savedStyle) {
+                setStyle(savedStyle);
+            }
+
+            // Add event listener for the toggle button
+            document.getElementById('toggle-switcher').addEventListener('click', toggleStyleSwitcher);
+        });
+    </script>
+
+
+</body>
+</html>
